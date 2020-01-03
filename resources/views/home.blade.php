@@ -14,7 +14,11 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <p>You are logged in!</p>
+
+					<ul>
+					<li><a href="{!! route('tables.channels') !!}">Channels</a></li>
+					</ul>
                 </div>
             </div>
         </div>
