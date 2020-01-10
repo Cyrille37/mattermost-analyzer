@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\MatterMost\Channel;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -30,10 +31,17 @@ class TablesController extends Controller
             return view('tables.channels');
         }
 
-        return DataTables::of(
-            Channel::query()
+        return dataTables::of(
+                Channel::query()->LastStats()
             )
-        ->make(true);
+            // Done on client-side.
+            /*->editColumn('header', function( Channel $channel ) {
+                return Str::limit( $channel->header, 20 );
+            })*/
+            /*->editColumn('purpose', function( Channel $channel ) {
+                return Str::limit( $channel->purpose, 20 );
+            })*/
+            ->make(true);
 
     }
 }

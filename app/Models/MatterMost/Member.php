@@ -21,12 +21,13 @@ class Member extends EloquentModel
 
     /**
      * The table associated with the model.
-     *
      * @var string
      */
     protected $table = self::TABLE_NAME ;
 
     public $incrementing = false ;
+
+    protected $keyType = 'string';
 
     protected $fillable = [
         'id', 'roles', 'username', 'nickname', 'create_at', 'delete_at'

@@ -25,6 +25,7 @@ class ChannelStat extends EloquentModel
     protected $table = self::TABLE_NAME ;
 
     public $incrementing = false ;
+    protected $primaryKey = null;
 
     protected $fillable = [
         'channel_id',
