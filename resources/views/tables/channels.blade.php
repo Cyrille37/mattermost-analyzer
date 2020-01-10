@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('css')
-    <link href="/lib/DataTables/datatables.min.css" rel="stylesheet">
+    <link href="{!! asset('/lib/DataTables/datatables.min.css') !!}" rel="stylesheet">
 
 <style type="text/css">
 .text-extract {
@@ -17,7 +17,7 @@
 @endpush
 
 @push('js_defer')
-    <script src="/lib/DataTables/datatables.min.js" defer></script>
+    <script src="{!! asset('/lib/DataTables/datatables.min.js') !!}" defer></script>
 @endpush
 
 @section('content')
