@@ -10,11 +10,11 @@
     <title>{{ config('app.name', 'Mattermost-Analyzer') }}</title>
 
     <!-- Scripts -->
-    <script src="/lib/jquery-3.4.1.min.js" defer></script>
-    <script src="/lib/bootstrap-4.4.1/js/bootstrap.min.js" defer></script>
+    <script src="{!! asset('/lib/jquery-3.4.1.min.js') !!}" defer></script>
+    <script src="{!! asset('/lib/bootstrap-4.4.1/js/bootstrap.min.js') !!}" defer></script>
 
     <!-- Styles -->
-    <link href="/lib/bootstrap-4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{!! asset('/lib/bootstrap-4.4.1/css/bootstrap.min.css') !!}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
