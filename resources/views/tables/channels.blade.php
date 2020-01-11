@@ -4,6 +4,7 @@
     <link href="{!! asset('/lib/DataTables/datatables.min.css') !!}" rel="stylesheet">
 
 <style type="text/css">
+
 .text-extract {
 }
 .text-full {
@@ -12,6 +13,11 @@
 .text-unwrap:hover {
     color: green;
 }
+
+#channels-table_info{
+    float: left;
+}
+
 </style>
 
 @endpush
@@ -51,11 +57,13 @@ var dataTableUrl =  "{!! route('tables.channels') !!}";
 $(function()
 {
 
-    $('#channels-table')
+    var t = $('#channels-table')
 	.DataTable({
         processing: true,
         serverSide: false,
-        pageLength: 25,
+        pageLength: 10,
+        pagingType: 'full_numbers',
+        dom: 'lifrstip',
         ajax: dataTableUrl,
         columns: [
             { data: 'display_name',
@@ -82,8 +90,10 @@ $(function()
             { data: null, name: 'last_post',
                 render: function( data, action, row ){
                     //return row.stats[0].last_post_at ;
-                	var date = new Date( parseInt( row.stats[0].last_post_at ) );
-                	return date.toISOString().replace('T',' ');
+                	//var date = new Date( parseInt( row.stats[0].last_post_at ) );
+                	//return date.toISOString().replace('T',' ');
+                    var d = moment( parseInt(row.stats[0].last_post_at) );
+                    return d.format('L') ;
                 }
             },
             { data: 'header',
