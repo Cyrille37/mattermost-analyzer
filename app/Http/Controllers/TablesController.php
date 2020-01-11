@@ -10,14 +10,16 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TablesController extends Controller
 {
-    const CLIENT_CACHE_SECONDS = 60 ;
-
     /**
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function channels( Request $request )
     {
-        return view('tables.channels');
+        return view('tables.channels')
+            ->withHeaders([
+                'Cache-Control' => self::cacheHeader()
+            ])
+            ;
     }
 
     public function channels_data( Request $request )
@@ -34,7 +36,7 @@ class TablesController extends Controller
              })*/
             ->make(true)
             ->withHeaders([
-                'Cache-Control' => 'public, proxy-revalidate, max-age='.self::CLIENT_CACHE_SECONDS
+                'Cache-Control' => self::cacheHeader()
             ])
             ;
     }
@@ -44,7 +46,11 @@ class TablesController extends Controller
      */
     public function members( Request $request )
     {
-        return view('tables.members');
+        return view('tables.members')
+            ->withHeaders([
+                'Cache-Control' => self::cacheHeader()
+            ])
+            ;
     }
 
     /**
@@ -57,8 +63,9 @@ class TablesController extends Controller
             )
             ->make(true)
             ->withHeaders([
-                'Cache-Control' => 'public, proxy-revalidate, max-age='.self::CLIENT_CACHE_SECONDS
+                'Cache-Control' => self::cacheHeader()
             ])
             ;
     }
+
 }
