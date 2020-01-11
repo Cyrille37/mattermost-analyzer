@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model as EloquentModel ;
  * @property int $msg_count Still at zero, it's a shame...
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Member $member
+ * @property Channel $channel
  *
  */
 class ChannelHasMember extends EloquentModel
@@ -43,5 +45,15 @@ class ChannelHasMember extends EloquentModel
         'created_at',
         'updated_at',
     ];
+
+    public function channel()
+    {
+        return $this->belongsTo( Channel::class );
+    }
+    
+    public function member()
+    {
+        return $this->belongsTo( Member::class );
+    }
 
 }

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel ;
  * @property int $delete_at Unix timestamp with milliseconds. User "Carbon::createFromTimestampMs()"
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property ChannelStat[] $stats
  *
  */
 class Channel extends EloquentModel
@@ -77,7 +78,7 @@ class Channel extends EloquentModel
          */
 
         return $query->with( ['stats'=> function($q)
-            {
+        {
             $q->join(
                 DB::raw('
             	   (
@@ -91,9 +92,18 @@ class Channel extends EloquentModel
                         ->on( 'channels_stats.created_at', '=', 'CS2.maxDate');
                 }
             );
-            }]
-        );
-        
+        }]);
+
+    }
+
+    public static function getNamesDictionnary()
+    {
+        $keyed = DB::table(self::TABLE_NAME)->select('id', 'display_name')->get()
+            ->mapWithKeys(function ($item)
+            {
+                return [$item->id => $item->display_name];
+            });
+        return $keyed->toArray();
     }
 
 }

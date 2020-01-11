@@ -42,17 +42,10 @@ class TablesController extends Controller
         {
             return view('tables.members');
         }
-        
+
         return dataTables::of(
             Member::query()->Members()
             )
-            // Done on client-side.
-        /*->editColumn('header', function( Channel $channel ) {
-         return Str::limit( $channel->header, 20 );
-         })*/
-        /*->editColumn('purpose', function( Channel $channel ) {
-         return Str::limit( $channel->purpose, 20 );
-         })*/
-        ->make(true);
+            ->make(true);
     }
 }

@@ -41,6 +41,7 @@
                     <th>Name</th>
                     <th>Roles</th>
                     <th>Created</th>
+                    <th>Subscriptions</th>
                     <th>Channels</th>
                 </tr>
             </thead>
@@ -56,6 +57,8 @@
 "use strict";
 
 var dataTableUrl =  "{!! route('tables.members') !!}";
+
+var channelsNames = {!! json_encode( \App\Models\MatterMost\Channel::getNamesDictionnary() ) !!} ;
 
 $(function()
 {
@@ -82,27 +85,42 @@ $(function()
         responsive: false,
         columns: [
             { data: 'username',
-                render: function( data, action, row ){
+                render: function( data, action, row )
+                {
                     return '<span title="'+row.id+'">'+data+'</span>'
                     	+ (row.nickname ? ' / '+row.nickname : '') 
                     ;
                 }
             },
-            { data: null, name: 'roles',
-                render: function( data, action, row ){
+            { data: 'roles',
+                render: function( data, action, row )
+                {
                     return data ;
                 }
             },
             { data: 'create_at',
-                render: function( data, action, row ){
+                render: function( data, action, row )
+                {
                     var d = moment( parseInt(data) );
                     return '<span class="d-none">'+data+' - </span>' /* ordering */
                     	+'<span title="'+ d.format('L LT') +'">'+d.fromNow()+'</span>' ;
                 }
             },
-            { data: null, name: 'channels',
-                render: function( data, action, row ){
-                    return '...';
+            { data: 'channels', name: 'subscriptions',
+                render: function( data, action, row )
+                {
+                    return data.length ;
+                }
+            },
+            { data: 'channels',
+                render: function( data, action, row )
+                {
+                    var channels = [];
+                    for( var c in data )
+                    {
+                    	channels.push( channelsNames[data[c].channel_id] );
+                    }
+                    return channels.join(', ');
                 }
             }
         ]

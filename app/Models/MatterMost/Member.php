@@ -2,6 +2,7 @@
 
 namespace App\Models\MatterMost ;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model as EloquentModel ;
 
 /**
@@ -44,11 +45,52 @@ class Member extends EloquentModel
         'created_at',
         'updated_at',
     ];
+
+    public function channels()
+    {
+        //return $this->hasMany( ChannelStat::class, 'channel_id', 'id' );
+        return $this->hasMany( ChannelHasMember::class, 'member_id', 'id' );
+    }
+
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeMembers( $query )
     {
+        /*
+        SELECT C.display_name, M.username, CHM.is_member
+        FROM members M
+        left join channels_has_members CHM on CHM.member_id = M.id
+        	inner join
+        	(
+        		select channel_id, MAX(created_at) maxDate from channels_has_members
+                where is_member=1
+        		group by channel_id
+        	) CHM2
+        		on CHM2.channel_id = CHM.id
+        		and CHM.created_at = CHM2.maxDate
+        left join channels C on C.id = CHM.channel_id
+        order by username
+         */
+
+        return $query->with( ['channels'=> function($q)
+        {
+            $q->join(
+                DB::raw('
+            	   (
+            		select channel_id, MAX(created_at) maxDate from channels_has_members
+                    where is_member=1
+            		group by channel_id
+            	   ) CHM2
+                '), function($join)
+                {
+                    $join
+                    ->on('CHM2.channel_id', '=', 'channels_has_members.channel_id')
+                    ->on( 'channels_has_members.created_at', '=', 'CHM2.maxDate');
+                }
+            );
+            //->with('channel');
+        }]);
     }
 }
