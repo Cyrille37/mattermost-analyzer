@@ -67,7 +67,10 @@ $(function()
 	.DataTable({
         processing: true,
         serverSide: false,
-        ajax: dataTableUrl,
+        ajax: {
+            url: dataTableUrl,
+            cache: true,
+        },
         language: {
             url: "{!! asset('/lib/DataTables/lang.'. app()->getLocale() .'.json') !!}"
         },
