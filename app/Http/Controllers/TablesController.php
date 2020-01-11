@@ -16,9 +16,6 @@ class TablesController extends Controller
     public function channels( Request $request )
     {
         return view('tables.channels')
-            ->withHeaders([
-                'Cache-Control' => self::cacheHeader()
-            ])
             ;
     }
 
@@ -47,9 +44,6 @@ class TablesController extends Controller
     public function members( Request $request )
     {
         return view('tables.members')
-            ->withHeaders([
-                'Cache-Control' => self::cacheHeader()
-            ])
             ;
     }
 
