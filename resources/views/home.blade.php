@@ -14,7 +14,9 @@
                         </div>
                     @endif
 
+					@auth
                     <p>You are logged in!</p>
+					@endauth
 
 					<ul>
 					<li><a href="{!! route('tables.channels') !!}">Channels</a></li>

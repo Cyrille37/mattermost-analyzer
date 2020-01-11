@@ -12,10 +12,13 @@
     <!-- Scripts -->
     <script src="{!! asset('/lib/jquery-3.4.1.min.js') !!}"></script>
     <script src="{!! asset('/lib/bootstrap-4.4.1/js/bootstrap.min.js') !!}" defer></script>
+    <script src="{!! asset('/lib/moment-with-locales-2.24.min.js') !!}" defer></script>
+    <script src="{!! asset('/lib/Chart.js-2.9.3/Chart.min.js') !!}" defer></script>
 
     <!-- Styles -->
     <link href="{!! asset('/lib/bootstrap-4.4.1/css/bootstrap.min.css') !!}" rel="stylesheet">
     <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet">
+    <link href="{!! asset('/lib/Chart.js-2.9.3/Chart.min.css') !!}" rel="stylesheet">
 
 	@stack('css')
 
@@ -27,7 +30,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{!! url('/') !!}">
-                    {{ config('app.name', 'Laravel') }}
+                    <i class="fas fa-chart-bar"></i> {!! config('app.name', 'Laravel') !!}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -42,6 +45,9 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
+                        <li class="nav-item">
+	                        <a class="nav-link" href="{{ url('/home') }}">Home</a>
+                        </li>
                         @guest
                             <li class="nav-item">
                                 <a class="nav-link" href="{!! route('login') !!}">{{ __('Login') }}</a>
@@ -79,6 +85,13 @@
         </main>
     </div>
 
+<script type="text/javascript">
+"use strict";
+$(function()
+{
+	moment.locale('{!! app()->getLocale() !!}');
+});
+</script>
 	@stack('js')
 
 </body>

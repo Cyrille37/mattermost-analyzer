@@ -30,6 +30,7 @@
             <th>Display name</th>
             <th>Members</th>
             <th>Posts</th>
+            <th>Created</th>
             <th>Last post</th>
             <th>Header</th>
             <th>Purpose</th>
@@ -70,6 +71,12 @@ $(function()
             { data: null, name: 'posts',
                 render: function( data, action, row ){
                     return row.stats[0].posts_count ;
+                }
+            },
+            { data: 'create_at',
+                render: function( data, action, row ){
+                    var d = moment( parseInt(data) );
+                    return '<span title="'+ d.format('L LT') +'">'+d.fromNow()+'</span>' ;
                 }
             },
             { data: null, name: 'last_post',
