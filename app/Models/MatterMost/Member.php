@@ -44,4 +44,11 @@ class Member extends EloquentModel
         'created_at',
         'updated_at',
     ];
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeMembers( $query )
+    {
+    }
 }

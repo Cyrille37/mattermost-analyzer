@@ -24,5 +24,6 @@ Route::group([
     Route::get('/home', 'HomeController@index')->name('home');
     
     Route::get('/tables/channels', 'TablesController@channels')->name('tables.channels');
+    Route::get('/tables/members', 'TablesController@members')->name('tables.members');
 });
 

@@ -78,7 +78,7 @@ $(function()
                 { className: 'btn-sm', extend: 'print' },
         	]
         },
-        pageLength: 10,
+        pageLength: 50,
         pagingType: 'full_numbers',
         dom: 'lifBrstip',
         fixedHeader: true,

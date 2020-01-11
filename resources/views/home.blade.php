@@ -19,7 +19,8 @@
 					@endauth
 
 					<ul>
-					<li><a href="{!! route('tables.channels') !!}">Channels</a></li>
+						<li><a href="{!! route('tables.channels') !!}">Channels <span class="badge badge-secondary">{!! \App\Models\MatterMost\Channel::count() !!}</span></a></li>
+						<li><a href="{!! route('tables.members') !!}">Members <span class="badge badge-info">{!! \App\Models\MatterMost\Member::count() !!}</span></a></li>
 					</ul>
                 </div>
             </div>
