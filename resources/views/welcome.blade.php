@@ -7,6 +7,7 @@
         <title>Mattermost Analyzer</title>
 
         <!-- Styles -->
+    <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet" />
         <style>
             html, body {
                 background-color: #fff;
@@ -82,6 +83,10 @@
                 <div class="title m-b-md">
                     Plop
                 </div>
+                <p style="margin-bottom: 3rem; font-size: 2rem;">
+                    <i class="far fa-hand-point-right"></i>
+                    <a href="{!! route('home') !!}">c'est pa<del>s</del>r là</a>
+                </p>
 
                 <div class="links">
                     <a href="https://laravel.com">Laravel</a>

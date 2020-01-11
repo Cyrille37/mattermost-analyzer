@@ -16,9 +16,9 @@
     <script src="{!! asset('/lib/Chart.js-2.9.3/Chart.min.js') !!}" defer></script>
 
     <!-- Styles -->
-    <link href="{!! asset('/lib/bootstrap-4.4.1/css/bootstrap.min.css') !!}" rel="stylesheet">
-    <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet">
-    <link href="{!! asset('/lib/Chart.js-2.9.3/Chart.min.css') !!}" rel="stylesheet">
+    <link href="{!! asset('/lib/bootstrap-4.4.1/css/bootstrap.min.css') !!}" rel="stylesheet" />
+    <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet" />
+    <link href="{!! asset('/lib/Chart.js-2.9.3/Chart.min.css') !!}" rel="stylesheet" />
 
 	@stack('css')
 
