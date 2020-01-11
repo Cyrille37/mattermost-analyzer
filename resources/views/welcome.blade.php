@@ -6,8 +6,11 @@
 
         <title>Mattermost Analyzer</title>
 
+		<link rel="icon" href="{!! asset('favicon.ico') !!}" />
+
         <!-- Styles -->
-    <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet" />
+    	<link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet" />
+
         <style>
             html, body {
                 background-color: #fff;

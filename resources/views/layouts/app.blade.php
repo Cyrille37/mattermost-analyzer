@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{!! csrf_token() !!}">
 
     <title>{{ config('app.name', 'Mattermost-Analyzer') }}</title>
+
 	<link rel="icon" href="{!! asset('favicon.ico') !!}" />
 
     <!-- Scripts -->
