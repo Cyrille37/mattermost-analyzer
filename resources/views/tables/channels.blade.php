@@ -18,6 +18,10 @@
     float: left;
 }
 
+.dt-buttons {
+    float: right;
+}
+
 </style>
 
 @endpush
@@ -30,21 +34,23 @@
 
 <div class="container">
 
-<table id="channels-table" class="table table-bordered table-striped table-condensed dataTable">
-    <thead>
-        <tr>
-            <th>Display name</th>
-            <th>Members</th>
-            <th>Posts</th>
-            <th>Created</th>
-            <th>Last post</th>
-            <th>Header</th>
-            <th>Purpose</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+    <div class="table-responsive">
+        <table id="channels-table" class="table table-bordered table-striped table-condensed dataTable">
+            <thead>
+                <tr>
+                    <th>Display name</th>
+                    <th>Members</th>
+                    <th>Posts</th>
+                    <th>Created</th>
+                    <th>Last post</th>
+                    <th>Header</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 
 </div>
 
@@ -61,10 +67,22 @@ $(function()
 	.DataTable({
         processing: true,
         serverSide: false,
+        ajax: dataTableUrl,
+        language: {
+            url: "{!! asset('/lib/DataTables/lang.'. app()->getLocale() .'.json') !!}"
+        },
+        buttons: {
+        	buttons: [
+                { className: 'btn-sm', extend: 'copy' },
+                { className: 'btn-sm', extend: 'csv' },
+                { className: 'btn-sm', extend: 'print' },
+        	]
+        },
         pageLength: 10,
         pagingType: 'full_numbers',
-        dom: 'lifrstip',
-        ajax: dataTableUrl,
+        dom: 'lifBrstip',
+        fixedHeader: true,
+        responsive: false,
         columns: [
             { data: 'display_name',
                 render: function( data, action, row ){
@@ -84,7 +102,7 @@ $(function()
             { data: 'create_at',
                 render: function( data, action, row ){
                     var d = moment( parseInt(data) );
-                    return '<span class="d-none">'+data+'</span>' /* ordering */
+                    return '<span class="d-none">'+data+' - </span>' /* ordering */
                     	+'<span title="'+ d.format('L LT') +'">'+d.fromNow()+'</span>' ;
                 }
             },
@@ -94,7 +112,7 @@ $(function()
                 	//var date = new Date( parseInt( row.stats[0].last_post_at ) );
                 	//return date.toISOString().replace('T',' ');
                     var d = moment( parseInt(row.stats[0].last_post_at) );
-                    return '<span class="d-none">'+data+'</span>' /* ordering */
+                    return '<span class="d-none">'+row.stats[0].last_post_at+' - </span>' /* ordering */
                     	+ d.format('L') ;
                 }
             },
