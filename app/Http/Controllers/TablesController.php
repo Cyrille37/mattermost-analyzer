@@ -10,27 +10,33 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TablesController extends Controller
 {
+    const CLIENT_CACHE_SECONDS = 60 ;
+
     /**
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function channels( Request $request )
     {
-        if( ! $request->ajax() )
-        {
-            return view('tables.channels');
-        }
+        return view('tables.channels');
+    }
 
+    public function channels_data( Request $request )
+    {
         return dataTables::of(
-                Channel::query()->LastStats()
+            Channel::query()->LastStats()
             )
             // Done on client-side.
             /*->editColumn('header', function( Channel $channel ) {
-                return Str::limit( $channel->header, 20 );
-            })*/
+             return Str::limit( $channel->header, 20 );
+             })*/
             /*->editColumn('purpose', function( Channel $channel ) {
-                return Str::limit( $channel->purpose, 20 );
-            })*/
-            ->make(true);
+             return Str::limit( $channel->purpose, 20 );
+             })*/
+            ->make(true)
+            ->withHeaders([
+                'Cache-Control' => 'public, proxy-revalidate, max-age='.self::CLIENT_CACHE_SECONDS
+            ])
+            ;
     }
 
     /**
@@ -38,14 +44,21 @@ class TablesController extends Controller
      */
     public function members( Request $request )
     {
-        if( ! $request->ajax() )
-        {
-            return view('tables.members');
-        }
+        return view('tables.members');
+    }
 
+    /**
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function members_data( Request $request )
+    {        
         return dataTables::of(
             Member::query()->Members()
             )
-            ->make(true);
+            ->make(true)
+            ->withHeaders([
+                'Cache-Control' => 'public, proxy-revalidate, max-age='.self::CLIENT_CACHE_SECONDS
+            ])
+            ;
     }
 }

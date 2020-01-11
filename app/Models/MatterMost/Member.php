@@ -54,9 +54,10 @@ class Member extends EloquentModel
 
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool $onlyMember default: true
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeMembers( $query )
+    public function scopeMembers( $query, $onlyMember=true )
     {
         /*
         SELECT C.display_name, M.username, CHM.is_member
@@ -74,14 +75,14 @@ class Member extends EloquentModel
         order by username
          */
 
-        return $query->with( ['channels'=> function($q)
+        return $query->with( ['channels'=> function($q) use ($onlyMember)
         {
             $q->join(
                 DB::raw('
             	   (
-            		select channel_id, MAX(created_at) maxDate from channels_has_members
-                    where is_member=1
-            		group by channel_id
+            		select channel_id, MAX(created_at) maxDate from channels_has_members'
+                    .( $onlyMember ? ' where is_member=1' : '' )
+            		.' group by channel_id
             	   ) CHM2
                 '), function($join)
                 {

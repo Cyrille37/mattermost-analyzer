@@ -56,7 +56,7 @@
 
 "use strict";
 
-var dataTableUrl =  "{!! route('tables.members') !!}";
+var dataTableUrl =  "{!! route('tables.members.data') !!}";
 
 var channelsNames = {!! json_encode( \App\Models\MatterMost\Channel::getNamesDictionnary() ) !!} ;
 

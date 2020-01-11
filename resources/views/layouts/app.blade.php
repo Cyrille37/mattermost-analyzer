@@ -12,6 +12,8 @@
     <!-- Scripts -->
     <script src="{!! asset('/lib/jquery-3.4.1.min.js') !!}"></script>
     <script src="{!! asset('/lib/bootstrap-4.4.1/js/bootstrap.min.js') !!}" defer></script>
+    <script src="{!! asset('/lib/Numeral-js-2.0.6/min/numeral.min.js') !!}" defer></script>
+    <script src="{!! asset('/lib/Numeral-js-2.0.6/min/locales/'.app()->getLocale().'.min.js') !!}" defer></script>
     <script src="{!! asset('/lib/moment-with-locales-2.24.min.js') !!}" defer></script>
     <script src="{!! asset('/lib/Chart.js-2.9.3/Chart.min.js') !!}" defer></script>
 
@@ -80,7 +82,7 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main id="app-content" class="py-4">
             @yield('content')
         </main>
     </div>
@@ -90,6 +92,16 @@
 $(function()
 {
 	moment.locale('{!! app()->getLocale() !!}');
+	numeral.locale('{!! app()->getLocale() !!}');
+
+	// format numbers
+	$('#app-content .number-format').each( function( i, el )
+	{
+		var $el = $(el);
+		var n = $el.html().trim();
+		$el.html( numeral(n).format() );
+	});
+
 });
 </script>
 	@stack('js')

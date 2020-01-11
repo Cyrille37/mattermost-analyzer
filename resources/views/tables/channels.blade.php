@@ -58,7 +58,7 @@
 
 "use strict";
 
-var dataTableUrl =  "{!! route('tables.channels') !!}";
+var dataTableUrl =  "{!! route('tables.channels.data') !!}";
 
 $(function()
 {
@@ -67,7 +67,10 @@ $(function()
 	.DataTable({
         processing: true,
         serverSide: false,
-        ajax: dataTableUrl,
+        ajax: {
+            url: dataTableUrl,
+            cache: true,
+        },
         language: {
             url: "{!! asset('/lib/DataTables/lang.'. app()->getLocale() .'.json') !!}"
         },
