@@ -84,7 +84,8 @@ $(function()
             { data: 'create_at',
                 render: function( data, action, row ){
                     var d = moment( parseInt(data) );
-                    return '<span title="'+ d.format('L LT') +'">'+d.fromNow()+'</span>' ;
+                    return '<span class="d-none">'+data+'</span>' /* ordering */
+                    	+'<span title="'+ d.format('L LT') +'">'+d.fromNow()+'</span>' ;
                 }
             },
             { data: null, name: 'last_post',
@@ -93,7 +94,8 @@ $(function()
                 	//var date = new Date( parseInt( row.stats[0].last_post_at ) );
                 	//return date.toISOString().replace('T',' ');
                     var d = moment( parseInt(row.stats[0].last_post_at) );
-                    return d.format('L') ;
+                    return '<span class="d-none">'+data+'</span>' /* ordering */
+                    	+ d.format('L') ;
                 }
             },
             { data: 'header',
