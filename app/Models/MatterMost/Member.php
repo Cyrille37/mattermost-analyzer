@@ -57,7 +57,7 @@ class Member extends EloquentModel
      * @param bool $onlyMember default: true
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeMembers( $query, $onlyMember=true )
+    public function scopeMemberships( $query, $onlyMember=true )
     {
         /*
         SELECT C.display_name, M.username, CHM.is_member
@@ -73,10 +73,11 @@ class Member extends EloquentModel
         		and CHM.created_at = CHM2.maxDate
         left join channels C on C.id = CHM.channel_id
         order by username
-         */
+        */
 
-        return $query->with( ['channels'=> function($q) use ($onlyMember)
+        return $query->with( ['channels'=> function($q) use ( $onlyMember )
         {
+
             $q->join(
                 DB::raw('
             	   (

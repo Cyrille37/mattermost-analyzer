@@ -53,7 +53,7 @@ class TablesController extends Controller
     public function members_data( Request $request )
     {        
         return dataTables::of(
-            Member::query()->Members()
+            Member::query()->Memberships()
             )
             ->make(true)
             ->withHeaders([
