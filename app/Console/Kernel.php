@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-	$schedule->command('mm:browseServer')
+	$schedule->command('mma:browseServer')
 		->twiceDaily(1, 13);
     }
 
