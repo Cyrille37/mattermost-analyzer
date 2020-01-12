@@ -91,11 +91,17 @@
 
 <script type="text/javascript">
 "use strict";
+
 $(function()
 {
 	moment.locale('{!! app()->getLocale() !!}');
 	numeral.locale('{!! app()->getLocale() !!}');
 
+	formatNumbers();
+});
+
+function formatNumbers()
+{
 	// format numbers
 	$('#app-content .number-format').each( function( i, el )
 	{
@@ -104,8 +110,9 @@ $(function()
 		$el.html( numeral(n).format() );
 	});
 
-});
+}
 </script>
+
 	@stack('js')
 
 </body>

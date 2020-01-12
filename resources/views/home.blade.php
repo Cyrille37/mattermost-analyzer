@@ -25,6 +25,9 @@
 						<li><a href="{!! route('tables.members') !!}">Members <span class="badge badge-info number-format">{!! \App\Models\MatterMost\Member::count() !!}</span></a></li>
 						<li> Members subscriptions <span class="badge badge-secondary number-format">{!! \App\Models\MatterMost\ChannelHasMember::count() !!}</span>
 					</ul>
+
+					@include('layouts._podiums')
+
                 </div>
             </div>
         </div>

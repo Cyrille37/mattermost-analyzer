@@ -55,10 +55,9 @@
 </div>
 
 <script type="text/javascript">
-
 "use strict";
 
-var dataTableUrl =  "{!! route('tables.channels.data') !!}";
+var channelsDataUrl =  "{!! route('tables.channels.data') !!}";
 
 $(function()
 {
@@ -68,7 +67,7 @@ $(function()
         processing: true,
         serverSide: false,
         ajax: {
-            url: dataTableUrl,
+            url: channelsDataUrl,
             cache: true,
         },
         language: {
