@@ -72,9 +72,7 @@
                         <a href="{{ url('/home') }}">Home</a>
                     @else
                         <a href="{{ url('/home') }}">Home</a>
-
                         <a href="{{ route('login') }}">Login</a>
-
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}">Register</a>
                         @endif
@@ -95,7 +93,7 @@
                     <a href="https://laravel.com">Laravel</a>
                     <a href="https://mattermost.org">Mattermost</a>
                     <a href="https://framateam.org">Framateam</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a href="https://github.com/Cyrille37/mattermost-analyzer">GitHub</a>
                 </div>
             </div>
         </div>
