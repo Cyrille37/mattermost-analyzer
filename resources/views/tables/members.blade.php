@@ -90,8 +90,10 @@ $(function()
             { data: 'username',
                 render: function( data, action, row )
                 {
-                    return '<span title="'+row.id+'">'+data+'</span>'
-                    	+ (row.nickname ? ' / '+row.nickname : '') 
+                    return '<span>'+data+'</span>'
+                    	+ (row.nickname ? ' / '+row.nickname : '')
+                    	// to search by user.id
+                    	+ '<span class="d-none">'+row.id+' - </span>'
                     ;
                 }
             },

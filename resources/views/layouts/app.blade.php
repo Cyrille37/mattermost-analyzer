@@ -24,6 +24,22 @@
     <link href="{!! asset('/lib/fontawesome-free-5.12.0-web/css/all.min.css') !!}" rel="stylesheet" />
     <link href="{!! asset('/lib/Chart.js-2.9.3/Chart.min.css') !!}" rel="stylesheet" />
 
+@if( env('APP_DEBUG') )
+    <style type="text/css">
+    /* debug bootstrap screen size https://getbootstrap.com/docs/3.3/css/ */
+    #debug-bt {text-transform: uppercase; color: green; font-size: 80%; position: fixed; top: 5px; left: 5px;}
+    #debug-bt .bt-sm, #debug-bt .bt-md, #debug-bt .bt-lg {display: none}
+    /* Extra small devices (phones, less than 768px) */
+    /* No media query since this is the default in Bootstrap */                    
+    /* Small devices (tablets, 768px and up) */
+    @media (min-width: 768px) { #debug-bt .bt-sm {display:inline;} #debug-bt .bt-xs {display:none;} }
+    /* Medium devices (desktops, 992px and up) */
+    @media (min-width: 992px) { #debug-bt .bt-md {display:inline;} #debug-bt .bt-sm {display:none;} }
+    /* Large devices (large desktops, 1200px and up) */
+    @media (min-width: 1200px) { #debug-bt .bt-lg {display:inline;} #debug-bt .bt-md {display:none;} }
+    </style>
+@endif
+
 	@stack('css')
 
 	@stack('js_defer')
@@ -32,7 +48,10 @@
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+        	@if( env('APP_DEBUG') )
+        	<span id="debug-bt"><span class="bt-xs">xs</span><span class="bt-sm">sm</span><span class="bt-md">md</span><span class="bt-lg">lg</span></span>
+        	@endif
+            <div class="container">            
                 <a class="navbar-brand" href="{!! url('/') !!}">
                     <i class="fas fa-chart-bar"></i> {!! config('app.name', 'Laravel') !!}
                 </a>

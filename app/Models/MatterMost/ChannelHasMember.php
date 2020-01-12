@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Model as EloquentModel ;
  * @property string $member_id
  * @property string $roles
  * @property bool $is_member
- * @property int $msg_count Still at zero, it's a shame...
+ * @property int $msg_count
+ * @property int $mention_count
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Member $member
@@ -29,11 +30,9 @@ class ChannelHasMember extends EloquentModel
     protected $table = self::TABLE_NAME ;
 
     protected $fillable = [
-        'channel_id',
-        'member_id',
-        'roles',
-        'is_member',
-        'msg_count'
+        'channel_id', 'member_id',
+        'roles', 'is_member',
+        'msg_count','mention_count'
     ];
 
     /**

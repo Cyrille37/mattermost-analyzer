@@ -19,7 +19,7 @@ class browseServer extends Command
      *
      * @var string
      */
-    protected $signature = 'mm:browseServer';
+    protected $signature = 'mma:browseServer';
 
     /**
      * The console command description.
@@ -232,6 +232,7 @@ class browseServer extends Command
         $previously = DB::table( ChannelHasMember::TABLE_NAME.' as CHM' )
             ->select('member_id')
             ->addselect( DB::raw('0 as seen') )
+            // TODO: reprendre la query utilisé pour ChannelStat avec "maxDate()" pour éviter le "order by".
             ->addSelect(DB::raw('
                 (
             	select is_member from channels_has_members as CHM2
@@ -264,7 +265,8 @@ class browseServer extends Command
             foreach( $members->getItems() as $item )
             {
                 /*
-                $this->line( var_export($item,true) );
+                if( $item->getUserId() == 'waoukshaejgjprqhstoardmeyr' )
+                    $this->line( var_export($item,true) );
                 Pnz\MattermostClient\Model\Channel\ChannelMember::__set_state(array(
                    'data' => 
                   array (
@@ -272,7 +274,7 @@ class browseServer extends Command
                     'user_id' => 'waoukshaejgjprqhstoardmeyr',
                     'roles' => 'channel_user channel_admin',
                     'last_viewed_at' => 0,
-                    'msg_count' => 0,
+                    'msg_count' => 234,
                     'mention_count' => 2,
                     'notify_props' => 
                     array (
@@ -295,21 +297,27 @@ class browseServer extends Command
                         'channel_id' => $channel->id,
                         'member_id' => $item->getUserId(),
                         'roles' => $item->getRoles(),
+                        'msg_count' => $item->getMsgCount(),
+                        'mention_count' => $item->getMentionCount(),
                         'is_member' => 1,
                     ]);
                 }
                 else
                 {
                     $prev->first()->seen = 1 ;
-                    if( $prev->first()->is_member == 0 )
-                    {
+
+                    // On créé une ligne de toute façon pour mettre à jour "msg_count".
+                    //if( $prev->first()->is_member == 0 )
+                    //{
                         ChannelHasMember::create([
                             'channel_id' => $channel->id,
                             'member_id' => $item->getUserId(),
                             'roles' => $item->getRoles(),
+                            'msg_count' => $item->getMsgCount(),
+                            'mention_count' => $item->getMentionCount(),
                             'is_member' => 1,
                         ]);
-                    }
+                    //}
                 }
 
             }// foreach $members->getItems()
@@ -342,14 +350,13 @@ class browseServer extends Command
     {
         $page = 0 ;
         $items_per_page = 100 ;
-        $members = [];
+        $members_count = 0 ;
         do
         {
             $membersApi = $this->mm->teams()->getTeamMembers( $team->getId(),
                 ['page'=>$page,'per_page'=>$items_per_page]
             );
-            //$this->line( var_export($members ,true) );
-
+            
             /**
              * @var \Pnz\MattermostClient\Model\Team\TeamMember $item
              */
@@ -359,7 +366,34 @@ class browseServer extends Command
                  * @var \Pnz\MattermostClient\Model\User\User $member
                  */
                 $member = $this->mm->users()->getUserById( $teamMember->getUserId() );
-                $members[] = $member ;
+                $members_count ++ ;
+
+                /*
+                if( $member->getId() == 'waoukshaejgjprqhstoardmeyr' )
+                    $this->line( var_export($member,true) );
+                Pnz\MattermostClient\Model\User\User::__set_state(array(
+                   'data' => 
+                  array (
+                    'id' => 'waoukshaejgjprqhstoardmeyr',
+                    'create_at' => 1491228547277,
+                    'update_at' => 1519340573277,
+                    'delete_at' => 0,
+                    'roles' => 'system_user',
+                    'allow_marketing' => NULL,
+                    'locale' => 'en',
+                    'username' => 'phil_3d',
+                    'auth_data' => '',
+                    'email' => '',
+                    'email_verified' => NULL,
+                    'notify_props' => NULL,
+                    'last_password_update' => NULL,
+                    'last_name' => '',
+                    'nickname' => '',
+                    'first_name' => '',
+                  ),
+                ))
+                 */
+
                 /**
                  * @var \App\Models\MatterMost\Member $member
                  */
@@ -384,7 +418,7 @@ class browseServer extends Command
         }
         while( $membersApi->count() == $items_per_page );
 
-        $this->info('Members count: '.count($members));
+        $this->info('Members count: '.$members_count );
 
     }
 
