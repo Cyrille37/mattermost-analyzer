@@ -2,6 +2,8 @@
 
 WIP on a Mattermost usage analyzer.
 
+![screenshot 01](./screenshot01.png)
+
 Access to Mattermost API done with [thePanz/MattermostClient](https://github.com/thePanz/MattermostClient).
 
 ## Run
