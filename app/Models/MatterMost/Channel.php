@@ -106,4 +106,31 @@ class Channel extends EloquentModel
         return $keyed->toArray();
     }
 
+    /**
+     * Retrieve current memberships on this channel
+     * .
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMemberships()
+    {
+        return DB::table(ChannelHasMember::TABLE_NAME.' as CHM')
+            ->where('CHM.channel_id', $this->id )
+            ->where('CHM.is_member', 1 )
+            ->join(
+                DB::raw(
+                '( select member_id, MAX(created_at) maxDate from channels_has_members'
+                .' where channel_id="'.$this->id.'"'
+                .' group by member_id'
+                .' ) CHM2'
+                ),
+                function($join)
+                {
+                    $join
+                    ->on('CHM2.member_id', '=', 'CHM.member_id')
+                    ->on( 'CHM.created_at', '=', 'CHM2.maxDate');
+                }
+            )
+            ->get();
+    }
+
 }

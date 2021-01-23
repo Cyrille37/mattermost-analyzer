@@ -213,37 +213,9 @@ class browseServer extends Command
     protected function updateChannelMembers( \App\Models\MatterMost\Channel $channel )
     {
 
-        //
-        // Retrieve current membership state in database
-        //
+        // Store current membership state in database.
 
-        /*$previously = DB::raw('
-            SELECT CHM.channel_id, CHM.member_id , (
-            	select is_member from channels_has_members as CHM2
-                where CHM2.channel_id="8zczr5aywb8ziq3onq96xm1j5y"
-                and CHM2.member_id = CHM.member_id
-                order by id desc
-                limit 1
-            	) as is_member
-            FROM channels_has_members as CHM
-            where channel_id="8zczr5aywb8ziq3onq96xm1j5y"
-            group by CHM.member_id
-        ')*/
-        $previously = DB::table( ChannelHasMember::TABLE_NAME.' as CHM' )
-            ->select('member_id')
-            ->addselect( DB::raw('0 as seen') )
-            // TODO: reprendre la query utilisé pour ChannelStat avec "maxDate()" pour éviter le "order by".
-            ->addSelect(DB::raw('
-                (
-            	select is_member from channels_has_members as CHM2
-                where CHM2.channel_id = "'.$channel->id.'"
-                and CHM2.member_id = CHM.member_id
-                order by id desc
-                limit 1
-            	) as is_member') )
-            ->where('channel_id',$channel->id)
-            ->groupBy('member_id')
-        ->get();
+        $previously = $channel->getMemberships();
 
         /*if( $channel->id == '8zczr5aywb8ziq3onq96xm1j5y' )
         {
@@ -274,7 +246,7 @@ class browseServer extends Command
                     'user_id' => 'waoukshaejgjprqhstoardmeyr',
                     'roles' => 'channel_user channel_admin',
                     'last_viewed_at' => 0,
-                    'msg_count' => 234,
+                    'msg_count' => 234, <= Ce n'est pas le nombre de messages du member !!
                     'mention_count' => 2,
                     'notify_props' => 
                     array (
@@ -289,35 +261,51 @@ class browseServer extends Command
                 ))
                  */
 
+                /*
+                if( in_array( $item->getUserId(), ['mxzyjrjgjbyrxneg3ycrbndo7c', '5apmguu3utdrxq8icuznxr5pcr','qnfkf7h6s7dp8biu3r8m5ksmbe']) )
+                {
+                    $this->line( $channel->display_name.' '.$item->getMsgCount());
+                }
+                */
+
                 $prev = $previously->where( 'member_id', $item->getUserId() );
 
-                if( $prev->count() == 0 )
+                if( $prev->count() > 0 )
                 {
-                    ChannelHasMember::create([
-                        'channel_id' => $channel->id,
-                        'member_id' => $item->getUserId(),
-                        'roles' => $item->getRoles(),
-                        'msg_count' => $item->getMsgCount(),
-                        'mention_count' => $item->getMentionCount(),
-                        'is_member' => 1,
-                    ]);
-                }
-                else
-                {
-                    $prev->first()->seen = 1 ;
+                    // Déjà abonné au channel
 
-                    // On créé une ligne de toute façon pour mettre à jour "msg_count".
-                    //if( $prev->first()->is_member == 0 )
-                    //{
+                    $prev = $prev->first() ;
+
+                    // pour qu'il ne soit pas dans les $noMoreMembers
+                    $prev->seen = true ;
+
+                    // On créé une ligne uniquement pour mettre à jour "is_member", "msg_count" ou "mention_count".
+                    if( $prev->is_member == 0
+                        //|| ($prev->msg_count != $item->getMsgCount())
+                        //|| ($prev->mention_count != $item->getMentionCount())
+                        )
+                    {
                         ChannelHasMember::create([
                             'channel_id' => $channel->id,
                             'member_id' => $item->getUserId(),
                             'roles' => $item->getRoles(),
-                            'msg_count' => $item->getMsgCount(),
+                            //'msg_count' => $item->getMsgCount(),
                             'mention_count' => $item->getMentionCount(),
                             'is_member' => 1,
                         ]);
-                    //}
+                    }
+                }
+                else 
+                {
+                    // Un nouveau dans le channel
+                    ChannelHasMember::create([
+                        'channel_id' => $channel->id,
+                        'member_id' => $item->getUserId(),
+                        'roles' => $item->getRoles(),
+                        //'msg_count' => $item->getMsgCount(),
+                        'mention_count' => $item->getMentionCount(),
+                        'is_member' => 1,
+                    ]);
                 }
 
             }// foreach $members->getItems()
@@ -328,15 +316,34 @@ class browseServer extends Command
 
         //
         // Processing no more members
+        // ils sont dans $previously mais pas vu lors de l'itération getChannelMembers()
         //
+
+        /*
+        if( $channel->id == '8zczr5aywb8ziq3onq96xm1j5y')
+        {
+        $this->line( '$previously: '.$previously->count() );
+        $prev = $previously->where( 'member_id', 'mxzyjrjgjbyrxneg3ycrbndo7c' );
+        $this->line('$previously has Cyrille37: '.$prev->count() );
+        }
+        */
 
         $noMoreMembers = $previously->filter(function ($item, $key)
         {
-            return $item->seen == 0 && $item->is_member == 1 ;
+            return !isset($item->seen) ;
         });
+
+        /*
+        if( $channel->id == '8zczr5aywb8ziq3onq96xm1j5y')
+        {
+        $this->line( '$noMoreMembers: '.$noMoreMembers->count() );
+        $prev = $noMoreMembers->where( 'member_id', 'mxzyjrjgjbyrxneg3ycrbndo7c' );
+        $this->line('$noMoreMembers has Cyrille37: '.$prev->count() );
+        }
+        */
+
         foreach( $noMoreMembers->all() as $item )
         {
-            //$this->line('noMoreMembers '.$item->member_id );
             ChannelHasMember::create([
                 'channel_id' => $channel->id,
                 'member_id' => $item->member_id ,
