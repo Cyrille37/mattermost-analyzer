@@ -74,23 +74,23 @@ class browseServer extends Command
         //$this->line( var_export($team,true) );
         $this->info( 'Using team: '.$team->getDisplayName() );
 
-        $this->info( 'Initialisation took '. (microtime(true)-$start_at).' seconds.' );
+        $this->comment( 'Initialisation took '. (microtime(true)-$start_at).' seconds.' );
 
         $start1_at = microtime(true);
 
         $this->info('Loading team members...');
         $this->loadMembers( $team );
 
-        $this->info( 'Loading team members took '. (microtime(true)-$start1_at).' seconds.' );
+        $this->comment( 'Loading team members took '. (microtime(true)-$start1_at).' seconds.' );
 
         $start1_at = microtime(true);
 
         $this->info('Loading team channels...');
         $this->loadChannels( $team );
 
-        $this->info( 'Loading team channels took '. (microtime(true)-$start1_at).' seconds.' );
+        $this->comment( 'Loading team channels took '. (microtime(true)-$start1_at).' seconds.' );
 
-        $this->info( 'All done in '. (microtime(true)-$start_at).' seconds.' );
+        $this->comment( 'All done in '. (microtime(true)-$start_at).' seconds.' );
     }
 
     protected function loadChannels( \Pnz\MattermostClient\Model\Team\Team $team )
@@ -202,7 +202,7 @@ class browseServer extends Command
                 $this->updateChannelMembers($channel);
 
             }
-            
+
             $page ++ ;
         }
         while( $channelsApi->count() == $items_per_page );
