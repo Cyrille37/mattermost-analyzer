@@ -13,8 +13,9 @@
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
         "nyholm/psr7": "^1.2",
-        "php-http/curl-client": "^2.1",
-        "php-http/message": "^1.8",
+        "php-http/curl-client": "^2.3",
+        "php-http/message": "^1.16",
+        "php-http/message-factory": "^1.1",
         "pnz/mattermost-client": "^0.1.0",
         "yajra/laravel-datatables-oracle": "^9.8"
     },
