@@ -117,7 +117,6 @@ class talksExtract extends Command
         }
 
         $posts_count = 1;
-
         /**
          * @var \Pnz\MattermostClient\Model\Post\Post $apiPost
          */
@@ -132,10 +131,11 @@ class talksExtract extends Command
         /**
          * @var Carbon $oldest_at
          */
-        $oldest_at = null;
+        $oldest_at = null; $newest_at = null ;
+        $page = 0 ;
         do {
             $posts = $this->mm->channels()->getChannelPosts($channel->id, [
-                'per_page' => 250, 'before' => $before,
+                'page'=>$page, 'per_page' => 250, 'before' => $before,
             ]);
             $posts_count += $posts->count();
             //$this->comment("\t" . $posts_count);
@@ -149,13 +149,22 @@ class talksExtract extends Command
                 $created_at = Carbon::createFromTimestampMs($apiPost->getCreateAt());
                 if ((!$oldest_at) || ($oldest_at > $created_at)) {
                     $oldest_at = $created_at;
-                    $before = $apiPost->getId();
+                    //$before = $apiPost->getId();
                 }
+                if ((!$newest_at) || ($newest_at < $created_at)) {
+                    $newest_at = $created_at;
+                }
+ 
             }
+            $page ++ ;
             usleep($this->sleepµ);
+
         } while ($posts->count() > 0);
 
-        $this->comment('Posts count: ' . $posts_count . ', oldest: ' . $oldest_at->toDateTimeString());
+        $this->comment('Posts count: ' . $posts_count
+        . ', oldest: ' . ($oldest_at ? $oldest_at->toDateTimeString() : 'null')
+        . ', newest_at: ' . ($newest_at ? $newest_at->toDateTimeString() : 'null')
+    );
     }
 
     /**
