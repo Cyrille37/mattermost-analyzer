@@ -36,12 +36,12 @@ class CreatePosts extends Migration
             'filenames' => NULL,
             'file_ids' => NULL,
             'pending_post_id' => '',
-             */
+            */
 
             $table->string('id');
-            $table->bigInteger('create_at')->unsigned()->comment('unix timestamp with milliseconds');
-            $table->bigInteger('update_at')->unsigned()->nullable()->comment('unix timestamp with milliseconds');
-            $table->bigInteger('delete_at')->unsigned()->nullable()->comment('unix timestamp with milliseconds');
+            $table->datetime('create_at');
+            $table->datetime('update_at')->nullable();
+            $table->datetime('delete_at')->nullable();
             $table->string('user_id');
             $table->string('channel_id');
             $table->boolean('pinned')->default(false);

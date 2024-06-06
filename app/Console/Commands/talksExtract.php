@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\MatterMost\Channel;
 use App\Models\MatterMost\ChannelHasMember;
 use App\Models\MatterMost\ChannelStat;
+use App\Models\MatterMost\MattermostModel;
 use App\Models\MatterMost\Post;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -103,24 +104,17 @@ class talksExtract extends Command
             $this->comment("\n" . 'Empty channel');
             return;
         }
-        if ($posts->count() > 1) {
+        // Il peut y avoir plusieurs posts si le dernier est une réponse (root_id).
+        /*if ($posts->count() > 1) {
+            echo var_export($posts,true),"\n";
+            echo 'order: ', var_export($posts->getOrder(),true),"\n";
+            echo 'current id: ', $posts->current()->getId(),"\n";
+            throw new \RuntimeException('Argh!');
+        }*/
+        // Par contre, dans ce cas le order n'en contient qu'un
+        if (count($posts->getOrder()) > 1) {
             throw new \RuntimeException('Argh!');
         }
-
-        /*
-
-        $posts_count += $posts->count();
-        $newest = ['at' => null, 'id' => null];
-        foreach ($posts->getItems() as $apiPost) {
-            $created_at = (new \DateTimeImmutable())->setTimestamp(intval($apiPost->getCreateAt() / 1000));
-            if ((!$newest['at']) || ($newest['at'] && ($newest['at'] < $created_at))) {
-                $newest['at'] = $created_at;
-                $newest['id'] = $apiPost->getId();
-            }
-        }
-        echo 'posts_count: ', $posts_count, ', newest: ', var_export($newest, true), "\n";
-        $before = $newest['id'];
-        */
 
         $posts_count = 1;
 
@@ -131,61 +125,28 @@ class talksExtract extends Command
         /**
          * @var \App\Models\MatterMost\Post $post
          */
-        $post = Post::firstOrCreate(
-            [
-                'id' => $apiPost->getId()
-            ],
-            [
-                'id' => $apiPost->getId(),
-                'create_at' => $apiPost->getCreateAt(),
-                'update_at' => $apiPost->getUpdateAt(),
-                'delete_at' => $apiPost->getDeleteAt(),
-                'user_id' => $apiPost->getUserId(),
-                'channel_id' => $apiPost->getChannelId(),
-                'pinned' => $apiPost->getIsPinned(),
-                'root_id' => $apiPost->getRootId(),
-                'parent_id' => $apiPost->getParentId(),
-                'original_id' => $apiPost->getOriginalId(),
-                'message' => $apiPost->getMessage(),
-                'type' => $apiPost->getType(),
-                'hashtag' => $apiPost->getHashtag(),
-            ]
-        );
+        $post = Post::firstOrCreateFromApi($apiPost);
         $before = $apiPost->getId();
 
         $seen = [];
+        /**
+         * @var Carbon $oldest_at
+         */
         $oldest_at = null;
         do {
             $posts = $this->mm->channels()->getChannelPosts($channel->id, [
                 'per_page' => 250, 'before' => $before,
             ]);
             $posts_count += $posts->count();
-            $this->comment("\t" . $posts_count);
+            //$this->comment("\t" . $posts_count);
             foreach ($posts->getItems() as $apiPost) {
-                if (array_key_exists($apiPost->getId(), $seen))
-                    throw new \RuntimeException('DOUBLON!');
+                //if (array_key_exists($apiPost->getId(), $seen))
+                //    throw new \RuntimeException('DOUBLON!');
                 $seen[$apiPost->getId()] = true;
-                $post = Post::firstOrCreate(
-                    [
-                        'id' => $apiPost->getId()
-                    ],
-                    [
-                        'id' => $apiPost->getId(),
-                        'create_at' => $apiPost->getCreateAt(),
-                        'update_at' => $apiPost->getUpdateAt(),
-                        'delete_at' => $apiPost->getDeleteAt(),
-                        'user_id' => $apiPost->getUserId(),
-                        'channel_id' => $apiPost->getChannelId(),
-                        'pinned' => $apiPost->getIsPinned(),
-                        'root_id' => $apiPost->getRootId(),
-                        'parent_id' => $apiPost->getParentId(),
-                        'original_id' => $apiPost->getOriginalId(),
-                        'message' => $apiPost->getMessage(),
-                        'type' => $apiPost->getType(),
-                        'hashtag' => $apiPost->getHashtag(),
-                    ]
-                );
-                $created_at = (new \DateTimeImmutable())->setTimestamp(intval($apiPost->getCreateAt() / 1000));
+
+                $post = Post::firstOrCreateFromApi($apiPost);
+
+                $created_at = Carbon::createFromTimestampMs($apiPost->getCreateAt());
                 if ((!$oldest_at) || ($oldest_at > $created_at)) {
                     $oldest_at = $created_at;
                     $before = $apiPost->getId();
@@ -194,7 +155,7 @@ class talksExtract extends Command
             usleep($this->sleepµ);
         } while ($posts->count() > 0);
 
-        echo 'posts_count: ', $posts_count, ', oldest_at: ', var_export($oldest_at, true), "\n";
+        $this->comment('Posts count: ' . $posts_count . ', oldest: ' . $oldest_at->toDateTimeString());
     }
 
     /**
@@ -241,21 +202,7 @@ class talksExtract extends Command
                 /**
                  * @var \App\Models\MatterMost\Channel $channel
                  */
-                $channel = Channel::firstOrCreate(
-                    [
-                        'id' => $item->getId()
-                    ],
-                    [
-                        'id' => $item->getId(),
-                        'name' => $item->getName(),
-                        'display_name' => $item->getDisplayName(),
-                        'header' => $item->getHeader(),
-                        'purpose' => $item->getPurpose(),
-                        'create_at' => $item->getCreateAt(),
-                        'delete_at' => $item->getDeleteAt(),
-                        'creator_id' => $item->getCreatorId(),
-                    ]
-                );
+                $channel = Channel::firstOrCreateFromApi($item);
                 //$this->comment("\t".$item->getName() );
                 //$this->line( var_export($channel,true) );
 
@@ -267,7 +214,7 @@ class talksExtract extends Command
                         //
                         $channelStat = new ChannelStat([
                             'channel_id' => $channel->id,
-                            'last_post_at' => $item->getLastPostAt(),
+                            'last_post_at' => MattermostModel::mmDateToCarbon($item->getLastPostAt()),
                             'posts_count' => $item->getTotalMsgCount(),
                         ]);
                         $stats = $this->mm->channels()->getChannelStats($channel->id);
@@ -289,7 +236,7 @@ class talksExtract extends Command
             $page++;
         } while ($channelsApi->count() == $items_per_page);
 
-        $this->info('Public channels count: ' . $channels_count);
+        $this->comment('Public channels count: ' . $channels_count);
     }
 
 
@@ -309,9 +256,9 @@ class talksExtract extends Command
              */
             foreach ($membersApi->getItems() as $teamMember) {
                 /**
-                 * @var \Pnz\MattermostClient\Model\User\User $member
+                 * @var \Pnz\MattermostClient\Model\User\User $apiMember
                  */
-                $member = $this->mm->users()->getUserById($teamMember->getUserId());
+                $apiMember = $this->mm->users()->getUserById($teamMember->getUserId());
                 $members_count++;
 
                 /*
@@ -321,9 +268,7 @@ class talksExtract extends Command
                    'data' => 
                   array (
                     'id' => 'waoukshaejgjprqhstoardmeyr',
-                    'create_at' => 1491228547277,
-                    'update_at' => 1519340573277,
-                    'delete_at' => 0,
+                    'create_at' => 1491228547277,'update_at' => 1519340573277,'delete_at' => 0,
                     'roles' => 'system_user',
                     'allow_marketing' => NULL,
                     'locale' => 'en',
@@ -334,50 +279,30 @@ class talksExtract extends Command
                     'notify_props' => NULL,
                     'last_password_update' => NULL,
                     'last_name' => '',
-                    'nickname' => '',
-                    'first_name' => '',
+                    'nickname' => '','first_name' => '',
                   ),
                 ))
-                 */
+                */
 
                 /**
                  * @var \App\Models\MatterMost\Member $member
                  */
-                $member = \App\Models\MatterMost\Member::firstOrCreate(
-                    [
-                        'id' => $member->getId()
-                    ],
-                    [
-                        'id' => $member->getId(),
-                        'roles' => $member->getRoles(),
-                        'username' => $member->getUsername(),
-                        'nickname' => $member->getNickname(),
-                        'create_at' => $member->getCreateAt(),
-                        'delete_at' => $member->getDeleteAt(),
-                    ]
-                );
-                //if( $member->username == 'philippe.cozian')
-                //    $this->line( $member->create_at .' '
-                //      . Carbon::createFromTimestampMs( $member->create_at )->toDateTimeString() );
+                $member = \App\Models\MatterMost\Member::firstOrCreateFromApi($apiMember);
+                /*if( $member->username == 'bot-artefacts')
+                    $this->line( var_export($apiMember,true) );
+                */
             }
             $page++;
         } while ($membersApi->count() == $items_per_page);
 
-        $this->info('Members count: ' . $members_count);
+        $this->comment('Members count: ' . $members_count);
     }
 
     protected function updateChannelMembers(\App\Models\MatterMost\Channel $channel)
     {
-
         // Store current membership state in database.
 
         $previously = $channel->getMemberships();
-
-        /*if( $channel->id == '8zczr5aywb8ziq3onq96xm1j5y' )
-        {
-            $this->line( $channel->id.' '. print_r($previously,true) );
-            //exit();
-        }*/
 
         // Processing channel's members
 
@@ -385,7 +310,6 @@ class talksExtract extends Command
         $items_per_page = 100;
         do {
             $members = $this->mm->channels()->getChannelMembers($channel->id, ['page' => $page, 'per_page' => $items_per_page]);
-
             /**
              * @var \Pnz\MattermostClient\Model\Channel\ChannelMember $item
              */
@@ -413,7 +337,7 @@ class talksExtract extends Command
                     'last_update_at' => 1574408652355,
                   ),
                 ))
-                 */
+                */
 
                 /*
                 if( in_array( $item->getUserId(), ['mxzyjrjgjbyrxneg3ycrbndo7c', '5apmguu3utdrxq8icuznxr5pcr','qnfkf7h6s7dp8biu3r8m5ksmbe']) )
@@ -426,12 +350,9 @@ class talksExtract extends Command
 
                 if ($prev->count() > 0) {
                     // Déjà abonné au channel
-
                     $prev = $prev->first();
-
                     // pour qu'il ne soit pas dans les $noMoreMembers
                     $prev->seen = true;
-
                     // On créé une ligne uniquement pour mettre à jour "is_member", "msg_count" ou "mention_count".
                     if (
                         $prev->is_member == 0

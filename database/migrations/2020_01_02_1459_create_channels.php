@@ -38,8 +38,9 @@ class CreateChannels extends Migration
             $table->string('display_name');
             $table->longText('header');
             $table->longText('purpose');
-            $table->bigInteger('create_at')->unsigned()->comment('unix timestamp with milliseconds');
-            $table->bigInteger('delete_at')->unsigned()->nullable()->comment('unix timestamp with milliseconds');
+            $table->datetime('create_at');
+            $table->datetime('update_at')->nullable();
+            $table->datetime('delete_at')->nullable();
             $table->string('creator_id');
 
             $table->timestamps();

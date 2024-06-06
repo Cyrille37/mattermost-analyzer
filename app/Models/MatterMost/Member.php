@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models\MatterMost ;
+namespace App\Models\MatterMost;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model as EloquentModel ;
+use Pnz\MattermostClient\Model\User\User as UserApi;
 
 /**
  * @property string $id
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel ;
  * @property Carbon $updated_at
  *
  */
-class Member extends EloquentModel
+class Member extends MattermostModel
 {
     const TABLE_NAME = 'members';
 
@@ -24,15 +25,7 @@ class Member extends EloquentModel
      * The table associated with the model.
      * @var string
      */
-    protected $table = self::TABLE_NAME ;
-
-    public $incrementing = false ;
-
-    protected $keyType = 'string';
-
-    protected $fillable = [
-        'id', 'roles', 'username', 'nickname', 'create_at', 'delete_at'
-        ];
+    protected $table = self::TABLE_NAME;
 
     /**
      * The attributes that should be mutated to dates.
@@ -40,16 +33,40 @@ class Member extends EloquentModel
      * @var array
      */
     protected $dates = [
-        //'create_at',
-        //'delete_at',
+        'create_at',
+        'update_at',
+        'delete_at',
         'created_at',
         'updated_at',
     ];
 
+    /**
+     * @param UserApi $apiMember
+     * @return \App\Models\MatterMost\Member
+     */
+    public static function firstOrCreateFromApi(UserApi $apiMember)
+    {
+        return Member::firstOrCreate(
+            [
+                'id' => $apiMember->getId()
+            ],
+            [
+                'id' => $apiMember->getId(),
+                'roles' => $apiMember->getRoles(),
+                'username' => $apiMember->getUsername(),
+                'nickname' => $apiMember->getNickname(),
+                'email' => $apiMember->getEmail(),
+                'create_at' => MattermostModel::mmDateToCarbon($apiMember->getCreateAt()),
+                'update_at' => MattermostModel::mmDateToCarbon($apiMember->getUpdateAt()),
+                'delete_at' => MattermostModel::mmDateToCarbon($apiMember->getDeleteAt()),
+            ]
+        );
+    }
+
     public function channels()
     {
         //return $this->hasMany( ChannelStat::class, 'channel_id', 'id' );
-        return $this->hasMany( ChannelHasMember::class, 'member_id', 'id' );
+        return $this->hasMany(ChannelHasMember::class, 'member_id', 'id');
     }
 
     /**
@@ -57,7 +74,7 @@ class Member extends EloquentModel
      * @param bool $onlyMember default: true
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeMemberships( $query, $onlyMember=true )
+    public function scopeMemberships($query, $onlyMember = true)
     {
         /*
         SELECT C.display_name, M.username, CHM.is_member
@@ -75,21 +92,20 @@ class Member extends EloquentModel
         order by username
         */
 
-        return $query->with( ['channels'=> function($q) use ( $onlyMember )
-        {
+        return $query->with(['channels' => function ($q) use ($onlyMember) {
 
             $q->join(
                 DB::raw('
             	   (
             		select channel_id, MAX(created_at) maxDate from channels_has_members'
-                    .( $onlyMember ? ' where is_member=1' : '' )
-            		.' group by channel_id
+                    . ($onlyMember ? ' where is_member=1' : '')
+                    . ' group by channel_id
             	   ) CHM2
-                '), function($join)
-                {
+                '),
+                function ($join) {
                     $join
-                    ->on('CHM2.channel_id', '=', 'channels_has_members.channel_id')
-                    ->on( 'channels_has_members.created_at', '=', 'CHM2.maxDate');
+                        ->on('CHM2.channel_id', '=', 'channels_has_members.channel_id')
+                        ->on('channels_has_members.created_at', '=', 'CHM2.maxDate');
                 }
             );
             //->with('channel');

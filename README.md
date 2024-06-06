@@ -35,3 +35,10 @@ view data
 `$ ./artisan serve`
 
 browse at http://127.0.0.1:8000
+
+## Tech
+
+```php
+// a Datetime from a milliseconds timestamp
+echo (Carbon::createFromTimestampMs(1717579823989))->toDateString(), "\n" ;
+```

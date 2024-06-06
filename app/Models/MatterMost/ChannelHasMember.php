@@ -2,9 +2,6 @@
 
 namespace App\Models\MatterMost ;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model as EloquentModel ;
-
 /**
  * @property int $id
  * @property string $channel_id
@@ -19,7 +16,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel ;
  * @property Channel $channel
  *
  */
-class ChannelHasMember extends EloquentModel
+class ChannelHasMember extends MattermostModel
 {
     const TABLE_NAME = 'channels_has_members';
 
@@ -29,12 +26,6 @@ class ChannelHasMember extends EloquentModel
      * @var string
      */
     protected $table = self::TABLE_NAME ;
-
-    protected $fillable = [
-        'channel_id', 'member_id',
-        'roles', 'is_member',
-        'msg_count','mention_count'
-    ];
 
     /**
      * The attributes that should be mutated to dates.

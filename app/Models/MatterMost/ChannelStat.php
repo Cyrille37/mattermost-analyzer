@@ -7,13 +7,13 @@ use Carbon\Carbon;
 
 /**
  * @property string $channel_id
- * @property int $last_post_at
+ * @property Carbon $last_post_at
  * @property int $posts_count
  * @property int $members_count
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-class ChannelStat extends EloquentModel
+class ChannelStat extends MattermostModel
 {
     const TABLE_NAME = 'channels_stats';
 
@@ -24,22 +24,13 @@ class ChannelStat extends EloquentModel
      */
     protected $table = self::TABLE_NAME ;
 
-    public $incrementing = false ;
-    protected $primaryKey = null;
-
-    protected $fillable = [
-        'channel_id',
-        'last_post_at',
-        'posts_count',
-        'members_count',
-    ];
-
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
     protected $dates = [
+        'last_post_at',
         'created_at',
         'updated_at',
     ];

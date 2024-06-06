@@ -38,14 +38,15 @@ class CreateMembers extends Migration
                 'last_password_update' => NULL,
                 'last_name' => '', <- pas dispo
                 'first_name' => '', <- pas dispo
-
              */
             $table->string('id');
             $table->string('roles');
             $table->string('username');
             $table->string('nickname');
-            $table->bigInteger('create_at')->unsigned()->comment('unix timestamp with milliseconds');
-            $table->bigInteger('delete_at')->unsigned()->nullable()->comment('unix timestamp with milliseconds');
+            $table->string('email')->nullable();
+            $table->datetime('create_at');
+            $table->datetime('update_at')->nullable();
+            $table->datetime('delete_at')->nullable();
 
             $table->timestamps();
         
